@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"sync"
 	"time"
+
+	"github.com/holodata/fakebee/ytl"
+	"github.com/pioz/faker"
 )
 
 const (
@@ -28,9 +31,15 @@ func (eventWorker *EventWorker) Run(wg *sync.WaitGroup) {
 		ticker := time.NewTicker(time.Duration(eventWorker.IntervalSeconds) * time.Second)
 
 		for eventWorker.BacklogSize > 0 {
-			t := <-ticker.C
+			<-ticker.C
 
-			fmt.Printf("Doing work for topic [%s] tick [%s]\n", eventWorker.Topic, t)
+			chat := ytl.Chat{}
+			err := faker.Build(&chat)
+			if err != nil {
+				panic(err)
+			}
+
+			fmt.Printf("Producing to topic [%s] with message: %v+\n", eventWorker.Topic, chat)
 			eventWorker.BacklogSize -= 1
 		}
 		ticker.Stop()

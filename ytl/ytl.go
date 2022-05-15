@@ -13,7 +13,7 @@ type Chat struct {
 	IsModerator bool   `faker:"bool" json:"mod"`
 	IsOwner     bool   `faker:"bool" json:"own"`
 	IsVerified  bool   `faker:"bool" json:"vrf"`
-	Membership  string `bson:"membership" json:"mem"`
+	Membership  string `faker:"string" json:"mem"`
 	YTTimestamp
 }
 
@@ -21,9 +21,9 @@ type SuperChat struct {
 	ID string `bson:"id" json:"id"`
 	Author
 	Origin
-	Message      string  `bson:"message" json:"msg"`
-	Currency     string  `bson:"currency" json:"cur"`
-	Amount       float64 `bson:"purchaseAmount" json:"amo"`
+	Message      string  `faker:"ParagraphWithSentenceCount(1)" json:"msg"`
+	Currency     string  `faker:"currencycode" json:"cur"`
+	Amount       float64 `faker:"float64" json:"amo"`
 	Significance int     `bson:"significance" json:"sig"`
 	YTTimestamp
 }
