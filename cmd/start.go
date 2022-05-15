@@ -1,5 +1,5 @@
 /*
-Copyright © 2022 NAME HERE <EMAIL ADDRESS>
+Copyright © 2022 Daniils Petrovs <thedanpetrov@gmail.com>
 
 */
 package cmd
@@ -19,10 +19,9 @@ var startCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var wg sync.WaitGroup
 
-		eventWorker := bee.New("chats", "UCyl1z3jo3XHR1riLFKG5UAg", "HtGA1DfQr9o")
-		wg.Add(1)
-
-		eventWorker.Run(&wg)
+		bee.NewEventWorker("UCyl1z3jo3XHR1riLFKG5UAg", "HtGA1DfQr9o", "chats").Run(&wg)
+		bee.NewEventWorker("UCyl1z3jo3XHR1riLFKG5UAg", "HtGA1DfQr9o", "superchats").Run(&wg)
+		wg.Add(2)
 
 		// Wait for all workers to finish
 		wg.Wait()

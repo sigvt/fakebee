@@ -16,7 +16,7 @@ type EventWorker struct {
 	IntervalSeconds, BacklogSize          int
 }
 
-func New(topic, originChannelId, originVideoId string) *EventWorker {
+func NewEventWorker(originChannelId, originVideoId, topic string) *EventWorker {
 	return &EventWorker{
 		topic, originChannelId, originVideoId, defaultIntervalSeconds, defaultBacklogSize}
 }
@@ -30,7 +30,7 @@ func (eventWorker *EventWorker) Run(wg *sync.WaitGroup) {
 		for eventWorker.BacklogSize > 0 {
 			t := <-ticker.C
 
-			fmt.Println("Doing work for topic", eventWorker.Topic, "got tic:", t)
+			fmt.Printf("Doing work for topic [%s] tick [%s]\n", eventWorker.Topic, t)
 			eventWorker.BacklogSize -= 1
 		}
 		ticker.Stop()
