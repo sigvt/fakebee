@@ -7,6 +7,7 @@ package cmd
 import (
 	"os"
 
+	"github.com/holodata/fakebee/ytl"
 	"github.com/pioz/faker"
 	"github.com/spf13/cobra"
 )
@@ -38,5 +39,7 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	faker.SetSeed(12345)
+	ytl.RegisterBuilders()
+
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

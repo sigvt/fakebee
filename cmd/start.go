@@ -7,9 +7,9 @@ package cmd
 import (
 	"fmt"
 	"sync"
-	"time"
 
 	"github.com/holodata/fakebee/bee"
+	"github.com/holodata/fakebee/ytl"
 	"github.com/spf13/cobra"
 )
 
@@ -20,17 +20,10 @@ var startCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var wg sync.WaitGroup
 
-		bee.NewEventWorker("UCyl1z3jo3XHR1riLFKG5UAg", "HtGA1DfQr9o", "chats").Run(&wg)
-		time.Sleep(500 * time.Millisecond)
-		bee.NewEventWorker("UCyl1z3jo3XHR1riLFKG5UAg", "HtGA1DfQr9o", "superchats").Run(&wg)
-		time.Sleep(500 * time.Millisecond)
-		bee.NewEventWorker("UCyl1z3jo3XHR1riLFKG5UAg", "HtGA1DfQr9o", "superstickers").Run(&wg)
-		time.Sleep(500 * time.Millisecond)
-		bee.NewEventWorker("UC1CfXB_kRs3C-zaeTG3oGyg", "HtGA1DfQr9o", "chats").Run(&wg)
-		time.Sleep(500 * time.Millisecond)
-		bee.NewEventWorker("UC1CfXB_kRs3C-zaeTG3oGyg", "HtGA1DfQr9o", "superchats").Run(&wg)
-		bee.NewEventWorker("UChAnqc_AY5_I3Px5dig3X1Q", "HtGA1DfQr9o", "chats").Run(&wg)
-		wg.Add(6)
+		origin := ytl.Origin{ChannelId: "UCyl1z3jo3XHR1riLFKG5UAg", VideoId: "HtGA1DfQr9o"}
+
+		bee.NewEventWorker(bee.WithTopic("chats"), bee.WithOrigin(origin)).Run(&wg)
+		wg.Add(1)
 
 		// Wait for all workers to finish
 		wg.Wait()

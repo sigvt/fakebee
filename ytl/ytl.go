@@ -4,9 +4,13 @@ package ytl
 
 import "time"
 
+type Event interface {
+	Chat | SuperChat | SuperSticker | Membership | Milestone | Ban | Deletion
+}
+
 // Regular live chat message
 type Chat struct {
-	ID string `faker:"uuid;unique" json:"id"`
+	ID string `faker:"actionId" json:"id"` // unique ID identifying a chat or other similar event
 	Author
 	Origin
 	Message     string `faker:"ParagraphWithSentenceCount(1)" json:"msg"`
@@ -18,70 +22,72 @@ type Chat struct {
 }
 
 type SuperChat struct {
-	ID string `bson:"id" json:"id"`
+	ID string `faker:"actionId" json:"id"`
 	Author
 	Origin
 	Message      string  `faker:"ParagraphWithSentenceCount(1)" json:"msg"`
 	Currency     string  `faker:"currencycode" json:"cur"`
 	Amount       float64 `faker:"float64" json:"amo"`
-	Significance int     `bson:"significance" json:"sig"`
+	Significance int     `faker:"-" json:"sig"`
 	YTTimestamp
 }
 
 type SuperSticker struct {
-	ID string `bson:"id" json:"id"`
+	ID string `faker:"actionId" json:"id"`
 	Author
 	Origin
-	Text      string    `bson:"text" json:"txt"`
-	Timestamp time.Time `bson:"timestamp" json:"ts"`
-	Currency  string    `bson:"currency" json:"cur"`
-	Amount    float64   `bson:"purchaseAmount" json:"amo"`
+	Text string `faker:"string" json:"txt"`
+	YTTimestamp
+	Currency string  `faker:"currencycode" json:"cur"`
+	Amount   float64 `faker:"Float64InRange(2, 20)" json:"amo"`
 }
 
 // Membership join chat message
 type Membership struct {
-	ID string `bson:"id" json:"id"`
+	ID string `faker:"actionId" json:"id"`
 	Author
 	Origin
-	Timestamp time.Time `bson:"timestamp" json:"ts"`
-	Level     string    `bson:"level" json:"lv"`
-	Since     string    `bson:"since" json:"s"`
+	YTTimestamp
+	Level string `faker:"-" json:"lv"`
+	Since string `faker:"membershipSince" json:"s"`
 }
 
 // Member milestone message
 type Milestone struct {
-	ID string `bson:"id" json:"id"`
+	ID string `faker:"actionId" json:"id"`
 	Author
 	Origin
-	Message string `bson:"message" json:"msg"`
-	Level   string `bson:"level" json:"lv"`
-	Since   string `bson:"since" json:"s"`
+	Message string `faker:"ParagraphWithSentenceCount(1)" json:"msg"`
+	Level   string `faker:"string" json:"lv"`
+	Since   string `faker:"membershipSince" json:"s"`
 	YTTimestamp
 }
 
 type Ban struct {
-	ID        string `bson:"_id" json:"oid"`
-	ChannelId string `bson:"channelId" json:"cid"`
+	ID        string `faker:"actionId" json:"oid"`
+	ChannelId string `faker:"stringWithSize(24)" json:"cid"`
 	Origin
 	YTTimestamp
 }
 
 type Deletion struct {
-	ID       string `bson:"_id" json:"oid"`
-	TargetId string `bson:"targetId" json:"tid"`
+	ID       string `faker:"actionId" json:"oid"`
+	TargetId string `faker:"actionId" json:"tid"`
 	Origin
 	YTTimestamp
-	Retracted bool `bson:"retracted" json:"r"`
+	Retracted bool `faker:"bool" json:"r"`
 }
 
+// Embedded models
+
 type Author struct {
-	ChannelId string `bson:"authorChannelId" json:"cid"`
+	ChannelId string `faker:"stringWithSize(24)" json:"cid"`
 	Name      string `faker:"username" json:"aut"`
 }
 
 type Origin struct {
-	ChannelId string `bson:"originChannelId" json:"ocid"`
-	VideoId   string `bson:"originVideoId" json:"ovid"`
+	ChannelId string `faker:"holomemChannelId" json:"ocid"`
+	VideoId   string `faker:"stringWithSize(11)" json:"ovid"`
 }
 
 type YTTimestamp struct {
