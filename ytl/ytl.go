@@ -2,7 +2,9 @@ package ytl
 
 // Youtube Live model definitions and helpers
 
-import "time"
+import (
+	"time"
+)
 
 type Event interface {
 	Chat | SuperChat | SuperSticker | Membership | Milestone | Ban | Deletion
@@ -28,7 +30,7 @@ type SuperChat struct {
 	Message      string  `faker:"ParagraphWithSentenceCount(1)" json:"msg"`
 	Currency     string  `faker:"currencycode" json:"cur"`
 	Amount       float64 `faker:"float64" json:"amo"`
-	Significance int     `faker:"-" json:"sig"`
+	Significance int     `faker:"int" json:"sig"`
 	YTTimestamp
 }
 
@@ -91,5 +93,22 @@ type Origin struct {
 }
 
 type YTTimestamp struct {
-	Timestamp time.Time `faker:"time" json:"ts"`
+	Timestamp time.Time `faker:"customTimeStamp" json:"ts"`
+}
+
+// Build a new faked event for a specific topic
+func NewEventForTopic(topic string) interface{} {
+	m := map[string]func() interface{}{
+		"chats":         ChatFactory,
+		"superchats":    SuperChatFactory,
+		"superstickers": SuperStickerFactory,
+		"memberships":   MembershipFactory,
+		"milestones":    MilestoneFactory,
+		"banactions":    BanFactory,
+		"deleteactions": DeletionFactory,
+	}
+
+	factory := m[topic]
+
+	return factory()
 }

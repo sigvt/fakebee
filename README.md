@@ -6,7 +6,7 @@ Fake Youtube Live event producer.
 
 ```bash
 go build .
-fakebee start
+fakebee start -b kafka
 ```
 
 ## Worker hierarchy

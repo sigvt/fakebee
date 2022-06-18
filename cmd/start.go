@@ -22,8 +22,11 @@ var startCmd = &cobra.Command{
 
 		origin := ytl.Origin{ChannelId: "UCyl1z3jo3XHR1riLFKG5UAg", VideoId: "HtGA1DfQr9o"}
 
-		bee.NewEventWorker(bee.WithTopic("chats"), bee.WithOrigin(origin)).Run(&wg)
-		wg.Add(1)
+		backend, _ := cmd.Flags().GetString("backend")
+
+		bee.NewEventWorker(bee.WithTopic("superchats"), bee.WithOrigin(origin), bee.WithBackend(backend)).Run(&wg)
+		bee.NewEventWorker(bee.WithTopic("chats"), bee.WithOrigin(origin), bee.WithBackend(backend)).Run(&wg)
+		wg.Add(2)
 
 		// Wait for all workers to finish
 		wg.Wait()
@@ -43,4 +46,5 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// startCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	startCmd.Flags().StringP("backend", "b", "printer", "Producer backend")
 }

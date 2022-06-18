@@ -2,7 +2,11 @@ package ytl
 
 // Custom Faker definitions
 
-import "github.com/pioz/faker"
+import (
+	"time"
+
+	"github.com/pioz/faker"
+)
 
 var holomemChannels = []string{"UCDqI2jOz0weumE8s7paEk6g",
 	"UC1CfXB_kRs3C-zaeTG3oGyg",
@@ -23,6 +27,12 @@ var membershipSinceBuilder = func(params ...string) (interface{}, error) {
 	return faker.Pick(durations...), nil
 }
 
+var customTimeStamp = func(params ...string) (interface{}, error) {
+	now := time.Now()
+	twoYearsAgo := now.AddDate(-2, 0, 0)
+	return faker.TimeInRange(twoYearsAgo, now), nil
+}
+
 // Must be called once to register the defined builders
 func RegisterBuilders() {
 	var builders = []struct {
@@ -32,6 +42,7 @@ func RegisterBuilders() {
 		{"holomemChannelId", "string", holomemChannelIdBuilder},
 		{"actionId", "string", actionIdBuilder},
 		{"membershipSince", "string", membershipSinceBuilder},
+		{"customTimeStamp", "time.Time", customTimeStamp},
 	}
 
 	var err error
@@ -42,4 +53,46 @@ func RegisterBuilders() {
 			panic(err)
 		}
 	}
+}
+
+var ChatFactory = func() interface{} {
+	var c Chat
+	faker.Build(&c)
+	return c
+}
+
+var SuperChatFactory = func() interface{} {
+	var sc SuperChat
+	faker.Build(&sc)
+	return sc
+}
+
+var SuperStickerFactory = func() interface{} {
+	var ss SuperSticker
+	faker.Build(&ss)
+	return ss
+}
+
+var MembershipFactory = func() interface{} {
+	var membership Membership
+	faker.Build(&membership)
+	return membership
+}
+
+var MilestoneFactory = func() interface{} {
+	var milestone Milestone
+	faker.Build(&milestone)
+	return milestone
+}
+
+var BanFactory = func() interface{} {
+	var ban Ban
+	faker.Build(&ban)
+	return ban
+}
+
+var DeletionFactory = func() interface{} {
+	var deletion Deletion
+	faker.Build(&deletion)
+	return deletion
 }
