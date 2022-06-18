@@ -9,12 +9,12 @@ import (
 
 	"github.com/holodata/fakebee/ytl"
 	kafka "github.com/segmentio/kafka-go"
+	"github.com/spf13/viper"
 )
 
 const (
 	defaultBacklogSize     = 10
 	defaultIntervalSeconds = 1
-	kafkaAddr              = "192.168.64.3:9092"
 )
 
 type EventWorker struct {
@@ -36,8 +36,9 @@ func NewEventWorker(options ...func(*EventWorker)) *EventWorker {
 	}
 
 	if ew.Backend != "printer" {
+		broker := viper.GetString("broker")
 		ew.KafkaWriter = &kafka.Writer{
-			Addr:                   kafka.TCP(kafkaAddr),
+			Addr:                   kafka.TCP(broker),
 			AllowAutoTopicCreation: true,
 			Topic:                  ew.Topic,
 			Balancer:               &kafka.Hash{},

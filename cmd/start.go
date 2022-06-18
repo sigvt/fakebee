@@ -11,6 +11,7 @@ import (
 	"github.com/holodata/fakebee/bee"
 	"github.com/holodata/fakebee/ytl"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // startCmd represents the start command
@@ -23,6 +24,9 @@ var startCmd = &cobra.Command{
 		origin := ytl.Origin{ChannelId: "UCyl1z3jo3XHR1riLFKG5UAg", VideoId: "HtGA1DfQr9o"}
 
 		backend, _ := cmd.Flags().GetString("backend")
+		broker, _ := cmd.InheritedFlags().GetString("broker")
+
+		viper.Set("broker", broker)
 
 		bee.NewEventWorker(bee.WithTopic("superchats"), bee.WithOrigin(origin), bee.WithBackend(backend)).Run(&wg)
 		bee.NewEventWorker(bee.WithTopic("chats"), bee.WithOrigin(origin), bee.WithBackend(backend)).Run(&wg)
@@ -36,15 +40,5 @@ var startCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(startCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// startCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// startCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	startCmd.Flags().StringP("backend", "b", "printer", "Producer backend")
+	startCmd.Flags().StringP("backend", "b", "printer", "Producer backend (either printer or kafka)")
 }
