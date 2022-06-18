@@ -5,8 +5,8 @@ FakeBee is a CLI tool that generates fake Youtube Live events, and can produce t
 ## Usage
 
 ```bash
-go build .
-./fakebee start -b kafka --broker <broker addr>:9092
+make
+./bin/fb start -b kafka --broker <broker addr>:9092
 ```
 
 If you need more info about commands, use the `-h` flag.
