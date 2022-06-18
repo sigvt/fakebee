@@ -30,7 +30,7 @@ type SuperChat struct {
 	Message      string  `faker:"ParagraphWithSentenceCount(1)" json:"msg"`
 	Currency     string  `faker:"currencycode" json:"cur"`
 	Amount       float64 `faker:"float64" json:"amo"`
-	Significance int     `faker:"int" json:"sig"`
+	Significance int     `faker:"IntInRange(1,7)" json:"sig"`
 	YTTimestamp
 }
 
