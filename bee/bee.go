@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	defaultBacklogSize     = 10
+	defaultBacklogSize     = 100
 	defaultIntervalSeconds = 1
 )
 

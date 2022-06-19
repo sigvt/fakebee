@@ -11,6 +11,13 @@ make
 
 If you need more info about commands, use the `-h` flag.
 
+### Docker
+
+```bash
+docker build --tag fakebee .
+docker run fakebee
+```
+
 ## Worker hierarchy
 
 Each `EventWorker` produces one kind of **events** to one specific **Kafka topic**.
