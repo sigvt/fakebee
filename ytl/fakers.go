@@ -3,8 +3,6 @@ package ytl
 // Custom Faker definitions
 
 import (
-	"time"
-
 	"github.com/pioz/faker"
 )
 
@@ -28,9 +26,8 @@ var membershipSinceBuilder = func(params ...string) (interface{}, error) {
 }
 
 var customTimeStamp = func(params ...string) (interface{}, error) {
-	now := time.Now()
-	twoYearsAgo := now.AddDate(-2, 0, 0)
-	return faker.TimeInRange(twoYearsAgo, now), nil
+	// twoYearsAgo := now.AddDate(-2, 0, 0)
+	return faker.TimeNow(), nil
 }
 
 // Must be called once to register the defined builders
