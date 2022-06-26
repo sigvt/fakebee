@@ -41,5 +41,11 @@ func initConfig() {
 	home, err := os.UserHomeDir()
 	cobra.CheckErr(err)
 
+	viper.SetConfigName("fb_config")
+	viper.SetConfigType("json")
+
+	viper.AddConfigPath(".")
 	viper.AddConfigPath(home)
+	err = viper.ReadInConfig()
+	cobra.CheckErr(err)
 }

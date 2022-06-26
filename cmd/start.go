@@ -5,14 +5,22 @@ Copyright © 2022 Daniils Petrovs <thedanpetrov@gmail.com>
 package cmd
 
 import (
-	"fmt"
+	"log"
+	"math/rand"
 	"sync"
+	"time"
 
 	"github.com/holodata/fakebee/bee"
 	"github.com/holodata/fakebee/ytl"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
+
+type Origin struct {
+	VideoId   string   `json:"videoId"`
+	ChannelId string   `json:"channelId`
+	Topics    []string `json:"topics"`
+}
 
 // startCmd represents the start command
 var startCmd = &cobra.Command{
@@ -21,20 +29,34 @@ var startCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var wg sync.WaitGroup
 
-		origin := ytl.Origin{ChannelId: "UCyl1z3jo3XHR1riLFKG5UAg", VideoId: "HtGA1DfQr9o"}
+		origins := []Origin{}
+		viper.UnmarshalKey("origins", &origins)
+
+		log.Printf("Origins configued: %+v\n", origins)
 
 		backend, _ := cmd.Flags().GetString("backend")
 		broker, _ := cmd.InheritedFlags().GetString("broker")
 
 		viper.Set("broker", broker)
 
-		bee.NewEventWorker(bee.WithTopic("superchats"), bee.WithOrigin(origin), bee.WithBackend(backend)).Run(&wg)
-		bee.NewEventWorker(bee.WithTopic("chats"), bee.WithOrigin(origin), bee.WithBackend(backend)).Run(&wg)
-		wg.Add(2)
+		for _, origin := range origins {
+			for _, topic := range origin.Topics {
+				worker := bee.NewEventWorker(
+					bee.WithTopic(topic),
+					bee.WithOrigin(ytl.Origin{ChannelId: origin.ChannelId, VideoId: origin.VideoId}),
+					bee.WithBackend(backend),
+				)
+
+				// Spread out the timing of the tickers
+				time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
+				worker.Run(&wg)
+				wg.Add(1)
+			}
+		}
 
 		// Wait for all workers to finish
 		wg.Wait()
-		fmt.Println("Finished all jobs!")
+		log.Println("Finished all jobs!")
 	},
 }
 

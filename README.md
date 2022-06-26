@@ -11,6 +11,12 @@ make
 
 If you need more info about commands, use the `-h` flag.
 
+## Configuration
+
+Add the file `fb_config.json` to your `HOME` directory, or to the current working directory.
+
+You can find an example in [fb_config.json](fb_config.json)
+
 ### Docker
 
 ```bash
