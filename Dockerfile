@@ -7,11 +7,11 @@ WORKDIR /app
 COPY go.mod ./
 COPY go.sum ./
 
-COPY . ./
+RUN go mod download
 
-RUN CGO_ENABLED=0 GOOS=linux GO111MODULE=on go mod download
+COPY . .
 
-RUN go build -o /fakebee
+RUN CGO_ENABLED=0 go build -o /fakebee
 
 FROM gcr.io/distroless/base-debian10
 
