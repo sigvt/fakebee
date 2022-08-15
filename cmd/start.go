@@ -18,7 +18,7 @@ import (
 
 type Origin struct {
 	VideoId   string   `json:"videoId"`
-	ChannelId string   `json:"channelId`
+	ChannelId string   `json:"channelId"`
 	Topics    []string `json:"topics"`
 }
 

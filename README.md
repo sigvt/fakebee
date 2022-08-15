@@ -30,15 +30,15 @@ Each `EventWorker` produces one kind of **events** to one specific **Kafka topic
 
 ```mermaid
 erDiagram
-		Queen ||--|{ EventWorker: manages
+  Queen ||--|{ EventWorker: manages
 
-		EventWorker {
-			string Topic
-			int Interval
-			int BacklogSize
-			string OriginChannelId
-			string OriginVideoId
-		}
+  EventWorker {
+   string Topic
+   int Interval
+   int BacklogSize
+   string OriginChannelId
+   string OriginVideoId
+  }
 ```
 
 An `origin` is simply an entity representing a fake source of live chat events (a Youtube Live **stream** from a specific **channel**).

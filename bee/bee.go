@@ -103,8 +103,7 @@ func (eventWorker *EventWorker) Run(wg *sync.WaitGroup) {
 		for eventWorker.BacklogSize > 0 {
 			<-ticker.C
 
-			event := ytl.NewEventForTopic(eventWorker.Topic)
-			err := eventWorker.produce(event)
+			err := eventWorker.produce()
 
 			if err != nil {
 				fmt.Println(err.Error())
@@ -115,68 +114,53 @@ func (eventWorker *EventWorker) Run(wg *sync.WaitGroup) {
 	}()
 }
 
-// Create a Kafka message from a Youtube Live event struct
-func newKafkaMessage(data interface{}, topic string) (kafka.Message, error) {
-	var res []byte
-	var key []byte
-	var err error
-
+// Creates and encodes an Event for a given topic
+// Returns the encoded `event` and `key`
+func EncodeEvent(topic string) (payload []byte, key []byte, err error) {
 	switch topic {
 	case "chats":
-		msg := data.(ytl.Chat)
-		res, err = json.Marshal(msg)
-		if err != nil {
-			return kafka.Message{}, err
-		}
-		key = []byte(fmt.Sprintf("ct-%s", msg.ID))
-
+		chat := ytl.ChatFactory()
+		payload, err = json.Marshal(chat)
+		key = []byte(fmt.Sprintf("ct-%s", chat.ID))
 	case "superchats":
-		msg := data.(ytl.SuperChat)
-		res, err = json.Marshal(msg)
-		if err != nil {
-			return kafka.Message{}, err
-		}
-		key = []byte(fmt.Sprintf("sc-%s", msg.ID))
-
+		superchat := ytl.SuperChatFactory()
+		payload, err = json.Marshal(superchat)
+		key = []byte(fmt.Sprintf("sc-%s", superchat.ID))
 	case "superstickers":
-		msg := data.(ytl.SuperSticker)
-		res, err = json.Marshal(msg)
-		if err != nil {
-			return kafka.Message{}, err
-		}
-		key = []byte(fmt.Sprintf("stk-%s", msg.ID))
-
+		supersticker := ytl.SuperStickerFactory()
+		payload, err = json.Marshal(supersticker)
+		key = []byte(fmt.Sprintf("stk-%s", supersticker.ID))
 	case "memberships":
-		msg := data.(ytl.Membership)
-		res, err = json.Marshal(msg)
-		if err != nil {
-			return kafka.Message{}, err
-		}
-		key = []byte(fmt.Sprintf("mem-%s", msg.ID))
-
+		membership := ytl.MembershipFactory()
+		payload, err = json.Marshal(membership)
+		key = []byte(fmt.Sprintf("mem-%s", membership.ID))
 	case "milestones":
-		msg := data.(ytl.Milestone)
-		res, err = json.Marshal(msg)
-		if err != nil {
-			return kafka.Message{}, err
-		}
-		key = []byte(fmt.Sprintf("mil-%s", msg.ID))
-
+		milestone := ytl.MilestoneFactory()
+		payload, err = json.Marshal(milestone)
+		key = []byte(fmt.Sprintf("mil-%s", milestone.ID))
 	case "banactions":
-		msg := data.(ytl.Ban)
-		res, err = json.Marshal(msg)
-		if err != nil {
-			return kafka.Message{}, err
-		}
-		key = []byte(fmt.Sprintf("ban-%s", msg.ID))
+		banaction := ytl.BanFactory()
+		payload, err = json.Marshal(banaction)
+		key = []byte(fmt.Sprintf("ban-%s", banaction.ID))
+	case "deleteactions":
+		deleteaction := ytl.DeletionFactory()
+		payload, err = json.Marshal(deleteaction)
+		key = []byte(fmt.Sprintf("del-%s", deleteaction.ID))
+	default:
+		payload, key, err = nil, []byte(""), fmt.Errorf("unknown topic: %s", topic)
+	}
 
-	case "deleactions":
-		msg := data.(ytl.Deletion)
-		res, err = json.Marshal(msg)
-		if err != nil {
-			return kafka.Message{}, err
-		}
-		key = []byte(fmt.Sprintf("del-%s", msg.ID))
+	return
+}
+
+// Create a Kafka message from a Youtube Live event struct
+func createKafkaMsg(topic string) (kafka.Message, error) {
+	var res, key []byte
+	var err error
+
+	res, key, err = EncodeEvent(topic)
+	if err != nil {
+		return kafka.Message{}, err
 	}
 
 	return kafka.Message{
@@ -185,14 +169,17 @@ func newKafkaMessage(data interface{}, topic string) (kafka.Message, error) {
 	}, nil
 }
 
-func (ew *EventWorker) produce(msg interface{}) error {
+func (ew *EventWorker) produce() error {
 	switch ew.Backend {
 	case "printer":
-		data, _ := json.Marshal(msg)
+		data, _, err := EncodeEvent(ew.Topic)
+		if err != nil {
+			return err
+		}
 		fmt.Printf("Printing to topic [%s] with message: %+s\n", ew.Topic, data)
 	case "kafka":
 		// only other backend atm is kafka
-		payload, err := newKafkaMessage(msg, ew.Topic)
+		payload, err := createKafkaMsg(ew.Topic)
 		if err != nil {
 			return err
 		}

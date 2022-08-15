@@ -52,43 +52,43 @@ func RegisterBuilders() {
 	}
 }
 
-var ChatFactory = func() interface{} {
+var ChatFactory = func() Chat {
 	var c Chat
 	faker.Build(&c)
 	return c
 }
 
-var SuperChatFactory = func() interface{} {
+var SuperChatFactory = func() SuperChat {
 	var sc SuperChat
 	faker.Build(&sc)
 	return sc
 }
 
-var SuperStickerFactory = func() interface{} {
+var SuperStickerFactory = func() SuperSticker {
 	var ss SuperSticker
 	faker.Build(&ss)
 	return ss
 }
 
-var MembershipFactory = func() interface{} {
+var MembershipFactory = func() Membership {
 	var membership Membership
 	faker.Build(&membership)
 	return membership
 }
 
-var MilestoneFactory = func() interface{} {
+var MilestoneFactory = func() Milestone {
 	var milestone Milestone
 	faker.Build(&milestone)
 	return milestone
 }
 
-var BanFactory = func() interface{} {
+var BanFactory = func() Ban {
 	var ban Ban
 	faker.Build(&ban)
 	return ban
 }
 
-var DeletionFactory = func() interface{} {
+var DeletionFactory = func() Deletion {
 	var deletion Deletion
 	faker.Build(&deletion)
 	return deletion
